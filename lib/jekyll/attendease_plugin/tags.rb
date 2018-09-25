@@ -151,7 +151,8 @@ module Jekyll
 
       def render(context)
         config = context.registers[:site].config['attendease']
-        site_settings = context.registers[:site].data['site_settings']
+        site_settings = context.registers[:site].data['site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
+        organization_site_settings = context.registers[:site].data['organization_site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
         parent_pages_are_clickable = config['parent_pages_are_clickable']
 
         page_data_source = if site_settings['advanced'] && site_settings['advanced']['portal_pages_in_the_event_website']
@@ -177,6 +178,21 @@ module Jekyll
           end
           .sort_by { |p| p['weight'] }
 
+        portal_pages = context.registers[:site].data['portal_pages']
+          .select { |p| p['root'] }
+          .reject { |p| p['hidden'] }
+          .map do |page|
+            page = page.select { |key| page_keys.include?(key) }
+
+            page['children'] = page['children']
+              .reject { |p| p['hidden'] }
+              .map { |child| child.select { |key| page_keys.include?(key) } }
+              .sort_by { |p| p['weight'] }
+
+            page
+          end
+          .sort_by { |p| p['weight'] }
+
         env = config['environment']
 
         if config['mode'] == 'organization'
@@ -185,14 +201,15 @@ module Jekyll
 (function(w) {
   w.AttendeaseConstants = {
     locale: "en",
-    orgApiEndpoint: "#{ config['api_host'] }api",
+    orgURL: "#{ config['api_host'] }",
     orgId: "#{ config['source_id'] }",
     privateSite: #{ config['private_site'] },
     authApiEndpoint: "#{ config['auth_host'] }api",
     orgLocales: #{ config['available_portal_locales'] },
     features: #{ config['features'].to_json },
     pages: #{ pages.to_json },
-    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} }
+    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
+    site_settings: #{ site_settings.to_json }
   }
 })(window)
 </script>
@@ -206,13 +223,16 @@ _EOT
     locale: "#{ config['locale'] }",
     eventApiEndpoint: "#{ config['api_host'] }api",
     eventId: "#{ config['source_id'] }",
-    orgApiEndpoint: "#{ config['organization_url'] }api",
+    orgURL: "#{ config['organization_url'] }",
     orgId: "#{ config['organization_id'] }",
     privateSite: #{ config['private_site'] },
     authApiEndpoint: "#{ config['auth_host'] }api",
     features: #{ config['features'].to_json },
     pages: #{ pages.to_json },
-    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} }
+    portal_pages: #{ portal_pages.to_json },
+    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
+    site_settings: #{ site_settings.to_json },
+    organization_site_settings: #{ organization_site_settings.to_json }
   }
 })(window)
 </script>
