@@ -152,7 +152,12 @@ module Jekyll
       def render(context)
         config = context.registers[:site].config['attendease']
         site_settings = context.registers[:site].data['site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
-        organization_site_settings = context.registers[:site].data['organization_site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
+
+        organization_site_settings = {}
+        if context.registers[:site].data['organization_site_settings']
+          organization_site_settings = context.registers[:site].data['organization_site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
+        end
+
         parent_pages_are_clickable = config['parent_pages_are_clickable']
 
         page_data_source = if site_settings['advanced'] && site_settings['advanced']['portal_pages_in_the_event_website']
