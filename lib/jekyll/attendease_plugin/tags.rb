@@ -178,20 +178,24 @@ module Jekyll
           end
           .sort_by { |p| p['weight'] }
 
-        portal_pages = context.registers[:site].data['portal_pages']
-          .select { |p| p['root'] }
-          .reject { |p| p['hidden'] }
-          .map do |page|
-            page = page.select { |key| page_keys.include?(key) }
+        portal_pages = if (context.registers[:site].data['portal_pages'])
+                         context.registers[:site].data['portal_pages']
+                           .select { |p| p['root'] }
+                           .reject { |p| p['hidden'] }
+                           .map do |page|
+                             page = page.select { |key| page_keys.include?(key) }
 
-            page['children'] = page['children']
-              .reject { |p| p['hidden'] }
-              .map { |child| child.select { |key| page_keys.include?(key) } }
-              .sort_by { |p| p['weight'] }
+                             page['children'] = page['children']
+                               .reject { |p| p['hidden'] }
+                               .map { |child| child.select { |key| page_keys.include?(key) } }
+                               .sort_by { |p| p['weight'] }
 
-            page
-          end
-          .sort_by { |p| p['weight'] }
+                             page
+                           end
+                           .sort_by { |p| p['weight'] }
+                         else
+                           {}
+                         end
 
         env = config['environment']
 
