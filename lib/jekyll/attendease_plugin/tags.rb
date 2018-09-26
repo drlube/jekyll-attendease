@@ -151,16 +151,16 @@ module Jekyll
 
       def render(context)
         config = context.registers[:site].config['attendease']
-        site_settings = context.registers[:site].data['site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
+        siteSettings = context.registers[:site].data['site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
 
-        organization_site_settings = {}
+        organizationSiteSettings = {}
         if context.registers[:site].data['organization_site_settings']
-          organization_site_settings = context.registers[:site].data['organization_site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
+          organizationSiteSettings = context.registers[:site].data['organization_site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
         end
 
         parent_pages_are_clickable = config['parent_pages_are_clickable']
 
-        page_data_source = if site_settings['advanced'] && site_settings['advanced']['portal_pages_in_the_event_website']
+        page_data_source = if siteSettings['advanced'] && siteSettings['advanced']['portal_pages_in_the_event_website']
                              'portal_pages'
                            else
                              'pages'
@@ -218,7 +218,7 @@ module Jekyll
     features: #{ config['features'].to_json },
     pages: #{ pages.to_json },
     settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
-    site_settings: #{ site_settings.to_json }
+    site_settings: #{ siteSettings.to_json }
   }
 })(window)
 </script>
@@ -240,8 +240,8 @@ _EOT
     pages: #{ pages.to_json },
     portal_pages: #{ portal_pages.to_json },
     settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
-    site_settings: #{ site_settings.to_json },
-    organization_site_settings: #{ organization_site_settings.to_json }
+    site_settings: #{ siteSettings.to_json },
+    organization_site_settings: #{ organizationSiteSettings.to_json }
   }
 })(window)
 </script>
