@@ -158,8 +158,7 @@ module Jekyll
           organizationSiteSettings = context.registers[:site].data['organization_site_settings'].delete_if {|key, value| ['analytics', 'meta'].include? key }
         end
 
-        parent_pages_are_clickable = config['parent_pages_are_clickable']
-        show_portal_navigation = config['show_portal_navigation']
+        parent_pages_are_clickable = config['parent_pages_are_clickable']        
 
         page_keys = %w[id name href weight active root children parent]
 
@@ -235,7 +234,7 @@ _EOT
     features: #{ config['features'].to_json },
     pages: #{ pages.to_json },
     portalPages: #{ portal_pages.to_json },
-    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable}, showPortalNavigation: #{!!show_portal_navigation} },
+    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
     siteSettings: #{ siteSettings.to_json },
     organizationSiteSettings: #{ organizationSiteSettings.to_json }
   }
