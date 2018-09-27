@@ -159,16 +159,12 @@ module Jekyll
         end
 
         parent_pages_are_clickable = config['parent_pages_are_clickable']
-
-        page_data_source = if siteSettings['advanced'] && siteSettings['advanced']['portal_pages_in_the_event_website']
-                             'portal_pages'
-                           else
-                             'pages'
-                           end
+        show_portal_navigation = config['show_portal_navigation']
 
         page_keys = %w[id name href weight active root children parent]
 
-        pages = context.registers[:site].data[page_data_source]
+        pages = {}
+        pages = context.registers[:site].data['pages']
           .select { |p| p['root'] }
           .reject { |p| p['hidden'] }
           .map do |page|
@@ -218,7 +214,7 @@ module Jekyll
     features: #{ config['features'].to_json },
     pages: #{ pages.to_json },
     settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
-    site_settings: #{ siteSettings.to_json }
+    siteSettings: #{ siteSettings.to_json }
   }
 })(window)
 </script>
@@ -238,10 +234,10 @@ _EOT
     authApiEndpoint: "#{ config['auth_host'] }api",
     features: #{ config['features'].to_json },
     pages: #{ pages.to_json },
-    portal_pages: #{ portal_pages.to_json },
-    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable} },
-    site_settings: #{ siteSettings.to_json },
-    organization_site_settings: #{ organizationSiteSettings.to_json }
+    portalPages: #{ portal_pages.to_json },
+    settings: { parentPagesAreClickable: #{!!parent_pages_are_clickable}, showPortalNavigation: #{!!show_portal_navigation} },
+    siteSettings: #{ siteSettings.to_json },
+    organizationSiteSettings: #{ organizationSiteSettings.to_json }
   }
 })(window)
 </script>
